@@ -1,19 +1,34 @@
+# Goal
+
+# Installation
 ```
+# Create virtual environment and activate it
+
 conda create --name us_election python=3
 source activate us_election
-pip install django
 
-django-admin startproject us_election
+# Install requirements
+pip install -r requirements.txt
 
-python manage.py startapp dashboard
-
+# Launch server
+python manage.py runserver
 ```
+The website is then available at: http://127.0.0.1:8000/dashboard
 
-Steps:
+# Preview
+Interactive Map
+![Map](pictures/map.png)
 
-- settings:
-    - add app 'dashboard'
-    - add templates directories
-    - add static directories
-- add urls
-- create views
+Dashboard
+![Dashboard](pictures/dashboard.png)
+
+# Todo
+Add bridge with database.
+
+Add multiple statistics, real time or not.
+
+Add state view.
+
+Optionnal:
+- create models
+- create an update process to query database and save it in website database

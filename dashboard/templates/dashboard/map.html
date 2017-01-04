@@ -35,6 +35,8 @@
 
 
 {% block body_tail %}
-<script src="{% static 'us-states-data.js' %}"></script>
+<script>
+    var ajaxurl = "{% url 'ajax_map' %}"
+</script>
 <script src="{% static 'us_map.js' %}"></script>
 {% endblock %}
