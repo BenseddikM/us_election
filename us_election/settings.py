@@ -11,16 +11,39 @@ https://docs.djangoproject.com/en/1.10/ref/settings/
 """
 
 import os
+import json
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+print("Base dir: ", BASE_DIR)
+# SECRETS NOT SAVED IN VCS
+try:
+    with open(os.path.join(BASE_DIR, 'us_election/secret.json')) as secrets_file:
+        secrets = json.load(secrets_file)
+except:
+    secrets = {}
+    print("No file")
+
+
+def get_secret(setting, my_secrets=secrets):
+    try:
+        value = my_secrets[setting]
+        # set as environment variable
+        os.environ[setting] = value
+        return my_secrets[setting]
+    except KeyError:
+        print("Impossible to get " + setting)
+
+
+MONGO_HOST = get_secret('MONGO_HOST')
+MONGO_PORT = get_secret('MONGO_PORT')
+# MONGO_PORT = int(get_secret('MONGOPORT'))
+
+SECRET_KEY = get_secret('SECRET_KEY')
 
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/1.10/howto/deployment/checklist/
-
-# SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'wefe3q@(x4-21(6v=4*09$u8#h%7cs9^x5opx5p@_)o87o+b#a'
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
@@ -58,6 +81,7 @@ TEMPLATES = [
         'DIRS': [
             os.path.join(BASE_DIR, 'us_election/templates'),
             os.path.join(BASE_DIR, 'dashboard/templates/dashboard'),
+            os.path.join(BASE_DIR, 'monitoring/templates'),
         ],
         'APP_DIRS': True,
         'OPTIONS': {
@@ -124,6 +148,7 @@ USE_TZ = True
 STATIC_URL = '/static/'
 STATICFILES_DIRS = [
     os.path.join(BASE_DIR, "us_election/static"),
+    os.path.join(BASE_DIR, "monitoring/static"),
     os.path.join(BASE_DIR, "dashboard/static/dashboard"),
 
 ]
