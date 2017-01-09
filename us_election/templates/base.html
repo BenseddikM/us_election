@@ -84,6 +84,9 @@
                         <li>
                             <a href="{% url 'map' %}"><i class="fa fa-map fa-fw"></i> Map</a>
                         </li>
+                        <li>
+                            <a href="{% url 'monitoring_home' %}"><i class="fa fa-bar-chart-o fa-fw"></i> Monitoring </a>
+                        </li>
 
                     </ul>
                 </div>
@@ -102,8 +105,9 @@
     <!-- /#wrapper -->
 
     <!-- jQuery -->
-    <script src="{% static 'vendor/jquery/jquery.min.js' %}"></script>
-
+    <!-- <script src="{% static 'vendor/jquery/jquery.min.js' %}"></script> -->
+    <script src="https://code.jquery.com/jquery-1.12.4.js"></script>
+    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
     <!-- Bootstrap Core JavaScript -->
     <script src="{% static 'vendor/bootstrap/js/bootstrap.min.js' %}"></script>
 

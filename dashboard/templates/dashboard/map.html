@@ -11,6 +11,10 @@
 <link rel="stylesheet" href="{% static 'custom.css' %}" />
 <script src="https://unpkg.com/leaflet@1.0.2/dist/leaflet.js"></script>
 
+<!-- Time control https://jqueryui.com/slider/#rangemin -->
+<link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+
+
 {% endblock %}
 
 
@@ -20,6 +24,16 @@
         <div class="col-lg-12">
             <h1 class="page-header">Map</h1>
         </div>
+        <div class="col-lg-12">
+            <p>
+                <label for="amount">Maximum Time:</label>
+                <input type="text" id="amount" readonly style="border:0; color:#f6931f; font-weight:bold;">
+            </p>
+            <div id="slider-range-min"></div>
+            <br />
+        </div>
+
+
         <!-- /.col-lg-12 -->
     </div>
     <!-- /.row -->
@@ -35,8 +49,12 @@
 
 
 {% block body_tail %}
+
+
 <script>
     var ajaxurl = "{% url 'ajax_map' %}"
 </script>
 <script src="{% static 'us_map.js' %}"></script>
+<script src="{% static 'slider.js' %}"></script>
+
 {% endblock %}

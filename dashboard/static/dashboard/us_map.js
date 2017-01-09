@@ -17,7 +17,7 @@ map.doubleClickZoom.disable();
 
 // We get data from ajax view and add it to the map
 $.getJSON(ajaxurl,
-    {}, // potential parameters
+    {minutes:10}, // potential parameters
     function (data) {
         map.layer = L.geoJson(data, {
     style: style,
@@ -29,8 +29,12 @@ $.getJSON(ajaxurl,
 
 
 function refreshGeoJsonLayer() {
+    // get value of slider
+    var minute = $( "#slider-range-min" ).slider( "value" )
     $.getJSON(ajaxurl,
-        {}, // potential parameters
+        {
+            minutes: minute
+        }, // potential parameters
         function (data) {
         map.layer.clearLayers();
         map.layer.addData(data);
