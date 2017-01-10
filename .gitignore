@@ -1,2 +1,5 @@
 *.DS_Store
 *.pyc
+
+# secrets hidden
+secret.json
