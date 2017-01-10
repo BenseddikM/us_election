@@ -1,7 +1,6 @@
 from datetime import datetime, timedelta
 from pymongo import MongoClient
 import pymongo
-from navitia_client import Client
 
 try:
     # Python 3.x

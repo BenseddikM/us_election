@@ -7,6 +7,8 @@ if os.environ["MONGO_PORT"]:
     MONGO_PORT = os.environ["MONGO_PORT"]
 if os.environ["MONGO_HOST"]:
     MONGO_HOST = os.environ["MONGO_HOST"]
+if os.environ["CASSANDRA_HOST"]:
+    CASSANDRA_HOST = os.environ["CASSANDRA_HOST"]
 
 
 def index(request):
@@ -15,6 +17,7 @@ def index(request):
 
 
 def ajax_monitoring_mongo_db(request):
+    print(MONGO_HOST, MONGO_PORT)
     status, add_info = check_mongo_connection(host=MONGO_HOST, port=MONGO_PORT)
     response = {"status": status, "add_info": add_info or ""}
     return JsonResponse(response)

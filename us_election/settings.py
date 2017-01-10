@@ -37,7 +37,8 @@ def get_secret(setting, my_secrets=secrets):
 
 MONGO_HOST = get_secret('MONGO_HOST')
 MONGO_PORT = get_secret('MONGO_PORT')
-# MONGO_PORT = int(get_secret('MONGOPORT'))
+
+CASSANDRA_HOST = get_secret('CASSANDRA_HOST')
 
 SECRET_KEY = get_secret('SECRET_KEY')
 

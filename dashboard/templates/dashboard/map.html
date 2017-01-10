@@ -43,16 +43,41 @@
         </div>
     </div>
 
+    <div class="row">
+        <!-- /.col-lg-6 -->
+        <div class="col-lg-6">
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    Résultats des votes de tous les états en temps réel
+                </div>
+                <!-- /.panel-heading -->
+                <div class="panel-body">
+                    <div id="morris-donut-chart"></div>
+                </div>
+                <!-- /.panel-body -->
+            </div>
+            <!-- /.panel -->
+        </div>
+        <!-- /.col-lg-6 -->
+    </div>
+
     <!-- /.row -->
 </div>
 {% endblock %}
 
 
 {% block body_tail %}
-
+<!-- Morris Charts JavaScript -->
+<script src="{% static 'vendor/raphael/raphael.min.js' %}"></script>
+<script src="{% static 'vendor/morrisjs/morris.min.js' %}"></script>
+<script src="{% static 'donnut.js' %}"></script>
 
 <script>
     var ajaxurl = "{% url 'ajax_map' %}"
+    var demlogo = "{% static 'demlogo.png' %}"
+    var replogo = "{% static 'replogo.jpg' %}"
+
+
 </script>
 <script src="{% static 'us_map.js' %}"></script>
 <script src="{% static 'slider.js' %}"></script>

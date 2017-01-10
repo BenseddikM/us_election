@@ -11,16 +11,30 @@ var map = new L.map('map', {
     layers: baseMap
 });
 
+// style
+var demIcon = L.icon({
+    iconUrl: demlogo,
+    iconSize:     [38, 95], // size of the icon
+    iconAnchor:   [22, 94], // point of the icon which will correspond to marker's location
+    popupAnchor:  [-3, -76] // point from which the popup should open relative to the iconAnchor
+});
+
+
+
 // Disable zoom : we use double click to refresh data
 map.doubleClickZoom.disable();
 
 
 // We get data from ajax view and add it to the map
 $.getJSON(ajaxurl,
-    {minutes:10}, // potential parameters
+    {minute :10}, // potential parameters
     function (data) {
         map.layer = L.geoJson(data, {
     style: style,
+    pointToLayer: function(feature, latlng) {
+
+                return L.marker(latlng, {icon: demIcon});}
+                ,
     onEachFeature: onEachFeature
 });
         map.layer.addTo(map);
@@ -33,7 +47,7 @@ function refreshGeoJsonLayer() {
     var minute = $( "#slider-range-min" ).slider( "value" )
     $.getJSON(ajaxurl,
         {
-            minutes: minute
+            minute: minute
         }, // potential parameters
         function (data) {
         map.layer.clearLayers();
@@ -130,6 +144,8 @@ legend.onAdd = function (map) {
 
     return div;
 };
+
+
 
 legend.addTo(map);
 
