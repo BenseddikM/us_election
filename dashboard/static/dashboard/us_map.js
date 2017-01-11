@@ -24,36 +24,22 @@ var demIcon = L.icon({
 // Disable zoom : we use double click to refresh data
 map.doubleClickZoom.disable();
 
-
-// We get data from ajax view and add it to the map
-$.getJSON(ajaxurl,
-    {minute :10}, // potential parameters
-    function (data) {
+function mapInitial(data) {
         map.layer = L.geoJson(data, {
     style: style,
     pointToLayer: function(feature, latlng) {
-
                 return L.marker(latlng, {icon: demIcon});}
                 ,
     onEachFeature: onEachFeature
-});
+    });
         map.layer.addTo(map);
     }
-);
 
-
-function refreshGeoJsonLayer() {
-    // get value of slider
-    var minute = $( "#slider-range-min" ).slider( "value" )
-    $.getJSON(ajaxurl,
-        {
-            minute: minute
-        }, // potential parameters
-        function (data) {
-        map.layer.clearLayers();
-        map.layer.addData(data);
-    });
+function mapRefresh(data) {
+    map.layer.clearLayers();
+    map.layer.addData(data);
 }
+
 
 // Color and style
 function getColor(d) {
@@ -145,9 +131,4 @@ legend.onAdd = function (map) {
     return div;
 };
 
-
-
 legend.addTo(map);
-
-// Datas are modified if doubleclick
-map.on('dblclick', refreshGeoJsonLayer);
