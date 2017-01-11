@@ -23,6 +23,7 @@ var demIcon = L.icon({
 
 // Disable zoom : we use double click to refresh data
 map.doubleClickZoom.disable();
+map.scrollWheelZoom.disable();
 
 function mapInitial(data) {
         map.layer = L.geoJson(data, {

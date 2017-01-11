@@ -48,6 +48,16 @@ def update_json_static_data(records, info_df):
     return records
 
 
+def get_static_map():
+    # GET BASIC GEOJSON DATA
+    flat_data = get_geojson_data()
+
+    # ADD NUMBER OF MAIN VOTERS AND NUMBER OF MAX VOTERS
+    info_df = load_static_data()
+    updated_json = update_json_static_data(flat_data, info_df)
+    return updated_json
+
+
 def mongo_save_aggregates(agg_list):
     c = connect_mongoclient(host=MONGO_HOST, port=MONGO_PORT)
     db = c["elections"]
@@ -79,6 +89,8 @@ def mongo_compute_state_count(state="Minnesota", minute=None, limit=10000000):
     collection = db["votes"]
     if not minute:
         update_time = datetime.now().strftime('2016-11-08T20:%M')
+    elif minute == "60":
+        update_time = '2016-11-08T21:00'
     else:
         update_time = '2016-11-08T20:%s' % minute
     # timestamp: "2016-11-08T20:00"
@@ -108,7 +120,7 @@ def mongo_compute_state_count(state="Minnesota", minute=None, limit=10000000):
         return answer
 
 
-def get_state_aggregates(state, minute):
+def update_state_aggregates(state, minute):
     # Try to find in aggregate collection
     print("GETTING AGG FOR %s at minute %s " % (state, minute))
     print("Is information in aggregate collection?")
@@ -130,7 +142,7 @@ def get_state_aggregates(state, minute):
     return (state, False)
 
 
-def get_all_states_aggregates(minute):
+def update_all_states_aggregates(minute):
     data_file_path = os.path.join(
         project_path, "dashboard", "data", "state_info.csv")
     df = pd.read_csv(data_file_path, sep=";")
@@ -140,7 +152,7 @@ def get_all_states_aggregates(minute):
     pool = Pool(processes=10)
     n = len(states)
     all_parameters = zip(states, [minute] * n)
-    list_tuples = pool.starmap(get_state_aggregates, all_parameters)
+    list_tuples = pool.starmap(update_state_aggregates, all_parameters)
     pool.close()
     pool.join()
 
@@ -162,6 +174,8 @@ def mongo_query_aggregates_all(minute):
     collection = db["aggregates"]
     if not minute:
         update_time = datetime.now().strftime('2016-11-08T20:%M')
+    elif minute == "60":
+        update_time = '2016-11-08T21:00'
     else:
         update_time = '2016-11-08T20:%s' % minute
     find_query = {"vote_timestamp": {"$lte": update_time}}
@@ -169,13 +183,56 @@ def mongo_query_aggregates_all(minute):
     return aggregates
 
 
+def extract_main_electors_donut_data(all_aggregates_at_minute):
+    info_df = load_static_data()
+    aggregates = pd.DataFrame(all_aggregates_at_minute)
+    idx = aggregates.groupby(['state'])['result'].transform(
+        max) == aggregates['result']
+    winners = aggregates[idx]
+    winners = winners[["state", "vote_result", "vote_timestamp"]]
+    winners = winners.join(info_df[
+        "Votes"], on="state")
+    final_result = winners.groupby("vote_result").sum()
+    final_result_json = final_result.to_json()
+    final_result_dict = json.loads(final_result_json)
+    # {
+    #    "Votes": {
+    #       "Clinton": "75",
+    #       "Trump": "142"
+    #   }
+    #}
+    results = final_result_dict["Votes"]
+    candidates = ["Clinton", "Trump", "Johnson", "Stein", "Autre"]
+
+    def check_data(candidate, data):
+        try:
+            return str(data[candidate])
+        except KeyError:
+            return "0"
+
+    for candidate in candidates:
+        results[candidate] = check_data(candidate, results)
+
+    results["Unknown"] = 538 - int(results["Clinton"]) - int(results["Trump"])
+
+    return results
+
+
+def extract_regular_electors_donut_data(all_aggregates_at_minute):
+    df = pd.DataFrame(all_aggregates_at_minute)
+    results = df.groupby("vote_result").result.sum()
+    results = results.to_json()
+    results = json.loads(results)
+    return results
+
+
 """
+##########    AUTRE     ##################################################
+
     {"$match": {"state": "Minnesota", "vote_timestamp": {"$lt": "2016-11-08T20:00"}}},
     {'$limit': 10000000},
     {"$group": {"_id": {"state": '$state', "vote_timestamp": '$vote_timestamp', "vote_result": "$vote_result"},
                 "result": {"$sum": 1}}}
-
-
 
 Result array of:
 

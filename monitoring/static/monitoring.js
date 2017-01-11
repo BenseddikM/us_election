@@ -1,10 +1,7 @@
-// First check MongoDB connection
-
-
-function updateHtml(response){
-    var status = response['status'];
+function updateButtonStatus(response){
     var add_info = response['add_info'];
-    var printed_info = "Databases available: "+JSON.stringify(add_info['database_names'])
+    var printed_info = "Databases available: "+JSON.stringify(add_info['database_names']);
+    var status = response['status'];
     var buttonClass;
     var faviconClass;
     if (status==true) {
@@ -13,37 +10,12 @@ function updateHtml(response){
     else if (status==false) {
         buttonClass="btn btn-danger btn-circle btn-lg";
         faviconClass="fa fa-times";}
-
     else {
         buttonClass="btn";
     }
     $("#mongo-status-circle").attr('class', buttonClass);
     $("#mongo-status-fa").attr('class', faviconClass);
     $("#mongo-add-info").html(printed_info);
-
-    // Now create divs and display bars
-
-    var databasesStats = response['add_info']['databases_stats'];
-    var arrayLength = databasesStats.length;
-    // clear div if needed
-    $("#databases_stats").empty();
-    for (var i = 0; i < arrayLength; i++) {
-        var databaseName = databasesStats[i]["database"];
-        var databaseData = databasesStats[i]["collections"];
-        createDiv(databaseName);
-        showMongoCollStats(databaseName,databaseData);
-    }
-}
-
-function checkMongoConnection(callback) {
-    $.getJSON(mongo_ajax_url,
-        {
-            connection_id : "connection_id"
-        },
-        updateHtml);
-
-    callback();
-
 }
 
 function createDiv(databaseName){
@@ -61,17 +33,37 @@ Morris.Bar({
 });
 }
 
-/*
-Morris.Bar({
-  element: databaseName,
-  data: [
-    { col: 'stat', count: 75},
-    { col: 'disruptions', count: 40},
-    { col: 'new', count: 24},
-    { col: 'other', count: 75},
-  ],
-  xkey: 'col',
-  ykeys: ['count'],
-  labels: ['Count']
+function createDatabasesDivs(response){
+    // Now create divs and display bars
+    var databasesStats = response['add_info']['databases_stats'];
+    var arrayLength = databasesStats.length;
+    // clear div if needed
+    $("#databases_stats").empty();
+    for (var i = 0; i < arrayLength; i++) {
+        var databaseName = databasesStats[i]["database"];
+        var databaseData = databasesStats[i]["collections"];
+        createDiv(databaseName);
+        showMongoCollStats(databaseName,databaseData);
+    }
+}
+
+var btn = $('#mongo-refresh');
+
+function updateHtml(response){
+    updateButtonStatus(response);
+    createDatabasesDivs(response);
+    btn.button('reset');
+}
+
+function checkMongoConnection() {
+    $.getJSON(mongo_ajax_url,
+        {},
+        updateHtml);
+}
+
+
+// Activate
+btn.on('click', function () {
+  $(this).button('loading');
+  checkMongoConnection();
 });
-*/

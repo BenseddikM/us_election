@@ -64,15 +64,6 @@
 
 <script src="{% static 'monitoring.js' %}"></script>
 
-<script>
-  $('#mongo-refresh').on('click', function () {
-    var btn = $(this).button('loading');
-    function resetButton(){btn.button('reset');}
-    checkMongoConnection(resetButton);
-});
 
-showMongoCollStats();
-
-</script>
 
 {% endblock %}

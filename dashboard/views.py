@@ -1,7 +1,7 @@
 from django.shortcuts import render
 from django.http import JsonResponse
 import json
-from .utils import update_json_static_data, get_all_states_aggregates, get_geojson_data, mongo_query_aggregates_all, load_static_data
+from .utils import update_json_static_data, update_all_states_aggregates, get_geojson_data, mongo_query_aggregates_all, load_static_data, get_static_map, extract_main_electors_donut_data, extract_regular_electors_donut_data
 from django.conf import settings
 import os
 import pandas as pd
@@ -25,38 +25,35 @@ def map_view(request):
 def map_data_ajax(request):
     minute_requested = request.GET.get('minute', '0')
 
-    # GET BASIC GEOJSON DATA
-    flat_data = get_geojson_data()
+    # GET MAP STATIC DATA
+    updated_json = get_static_map()
 
-    # ADD NUMBER OF MAIN VOTERS AND NUMBER OF MAX VOTERS
-    info_df = load_static_data()
-    updated_json = update_json_static_data(flat_data, info_df)
+    # UPDATE REAL TIME INFORMATION
+    state_results = update_all_states_aggregates(minute=minute_requested)
 
-    # GET REAL TIME INFORMATION
-    state_results = get_all_states_aggregates(minute=minute_requested)
+    # QUERY AGGREGATES FORMERLY CREATED
+    all_aggregates_at_minute = mongo_query_aggregates_all(
+        minute=minute_requested)
 
-    # GET GENERAL DONUT RESULT
-    aggregates_list = mongo_query_aggregates_all(minute=minute_requested)
-    aggregates = pd.DataFrame(aggregates_list)
-    idx = aggregates.groupby(['state'])['result'].transform(
-        max) == aggregates['result']
-    winners = aggregates[idx]
-    winners = winners[["state", "vote_result", "vote_timestamp"]].join(info_df[
-                                                                       "Votes"], on="state")
-    final_result = winners.groupby("vote_result").sum()
-    final_result_json = final_result.to_json()
-    final_result_dict = json.loads(final_result_json)
+    # EXTRACT MAIN VOTERS DONUT DATA
+    main_electors_donut_data = extract_main_electors_donut_data(
+        all_aggregates_at_minute)
 
-    # SEND AS A FEATURES COLLECTION
-    features_collection = {
-        "type": "FeatureCollection",
-        "features": updated_json,
+    # EXTRACT REGULAR VOTERS DONUT DATA
+    regular_electors_donut_data = extract_regular_electors_donut_data(
+        all_aggregates_at_minute)
+
+    # SEND INFORMATION
+    data = {
+        "map": {"type": "FeatureCollection", "features": updated_json},
         "state_results": state_results,
-        "general": final_result_dict
+        "main_electors_donut_data": main_electors_donut_data,
+        "regular_electors_donut_data": regular_electors_donut_data,
+        "minute_requested": minute_requested
     }
     # df = pd.read_json(flat_data)
 
-    return JsonResponse(features_collection, safe=False)
+    return JsonResponse(data, safe=False)
 
 """
 [

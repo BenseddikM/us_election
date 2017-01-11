@@ -6,6 +6,13 @@
 <title>US Elections Map</title>
 {% endblock %}
 
+{% block menuadd %}
+<li>
+
+
+</li>
+{% endblock %}
+
 {% block header_tail %}
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.0.2/dist/leaflet.css" />
 <link rel="stylesheet" href="{% static 'custom.css' %}" />
@@ -21,13 +28,16 @@
 {% block content %}
 <div id="page-wrapper">
     <div class="row">
-        <div class="col-lg-12">
-            <h1 class="page-header">Map</h1>
-        </div>
+        <br />
         <div class="col-lg-12">
             <p>
                 <label for="amount">Maximum Time:</label>
                 <input type="text" id="amount" readonly style="border:0; color:#f6931f; font-weight:bold;">
+                <button id="mongo-refresh" data-loading-text="Loading..." type="button" class="btn btn-primary" autocomplete="off" >Refesh data
+                </button>
+                <button id="mongo-status-circle" type="button" class="btn btn-warning btn-circle btn-lg"><i id="mongo-status-fa" class="fa fa-question"></i>
+                </button>
+                <span id="minute_requested"></span>
             </p>
             <div id="slider-range-min"></div>
             <br />
@@ -42,17 +52,30 @@
 
         </div>
     </div>
-
+    <br />
     <div class="row">
+        <div class="col-lg-6">
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    Grands électeurs
+                </div>
+                <!-- /.panel-heading -->
+                <div class="panel-body">
+                    <div id="donut-main-electors"></div>
+                </div>
+                <!-- /.panel-body -->
+            </div>
+            <!-- /.panel -->
+        </div>
         <!-- /.col-lg-6 -->
         <div class="col-lg-6">
             <div class="panel panel-default">
                 <div class="panel-heading">
-                    Résultats des votes de tous les états en temps réel
+                    Electeurs "normaux"
                 </div>
                 <!-- /.panel-heading -->
                 <div class="panel-body">
-                    <div id="morris-donut-chart"></div>
+                    <div id="donut-regular-electors"></div>
                 </div>
                 <!-- /.panel-body -->
             </div>
@@ -70,15 +93,16 @@
 <!-- Morris Charts JavaScript -->
 <script src="{% static 'vendor/raphael/raphael.min.js' %}"></script>
 <script src="{% static 'vendor/morrisjs/morris.min.js' %}"></script>
-<script src="{% static 'donnut.js' %}"></script>
 
+<!-- Custom variables -->
 <script>
     var ajaxurl = "{% url 'ajax_map' %}"
     var demlogo = "{% static 'demlogo.png' %}"
     var replogo = "{% static 'replogo.jpg' %}"
-
-
 </script>
+
+<!-- Custom scripts -->
+<script src="{% static 'donnut.js' %}"></script>
 <script src="{% static 'us_map.js' %}"></script>
 <script src="{% static 'slider.js' %}"></script>
 <script src="{% static 'ajax_refresh.js' %}"></script>
