@@ -2,4 +2,4 @@
 *.pyc
 
 # secrets hidden
-secret.json
+us_election/secret.json
