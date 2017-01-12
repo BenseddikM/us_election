@@ -15,7 +15,7 @@ import json
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-print("Base dir: ", BASE_DIR)
+# print("Base dir: ", BASE_DIR)
 # SECRETS NOT SAVED IN VCS
 try:
     with open(os.path.join(BASE_DIR, 'us_election/secret.json')) as secrets_file:
@@ -32,7 +32,8 @@ def get_secret(setting, my_secrets=secrets):
         os.environ[setting] = value
         return my_secrets[setting]
     except KeyError:
-        print("Impossible to get " + setting)
+        # print("Impossible to get " + setting)
+        pass
 
 
 MONGO_HOST = get_secret('MONGO_HOST')
