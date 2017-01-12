@@ -39,7 +39,7 @@ def check_mongo_connection(host, user=None, password=None, port=None, database=N
             "database_names": database_names,
             "databases_stats": get_databases_stats(client)
         }
-        print("MongoDB connection OK")
+        # print("MongoDB connection OK")
     except pymongo.errors.ServerSelectionTimeoutError as err:
         # Status stays False
         add_info = None

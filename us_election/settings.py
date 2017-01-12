@@ -154,3 +154,5 @@ STATICFILES_DIRS = [
     os.path.join(BASE_DIR, "dashboard/static/dashboard"),
 
 ]
+
+STATIC_ROOT = os.path.join(BASE_DIR, 'static/')
