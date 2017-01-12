@@ -17,7 +17,7 @@ def index(request):
 
 
 def ajax_monitoring_mongo_db(request):
-    print(MONGO_HOST, MONGO_PORT)
-    status, add_info = check_mongo_connection(host=MONGO_HOST, port=MONGO_PORT)
+    # print(MONGO_HOST, MONGO_PORT)
+    status, add_info = check_mongo_connection(host=MONGO_HOST)
     response = {"status": status, "add_info": add_info or ""}
     return JsonResponse(response)

@@ -23,11 +23,7 @@ Dashboard
 ![Dashboard](pictures/dashboard.png)
 
 # Todo
-Add bridge with database.
-
-Add multiple statistics, real time or not.
-
-Add state view.
+- use asyncio with motor to query MongoDB instead of multiprocessing
 
 Optionnal:
 - create models

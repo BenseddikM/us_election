@@ -122,23 +122,24 @@ def mongo_compute_state_count(state="Minnesota", minute=None, limit=10000000):
 
 def update_state_aggregates(state, minute):
     # Try to find in aggregate collection
-    print("GETTING AGG FOR %s at minute %s " % (state, minute))
-    print("Is information in aggregate collection?")
+    # print("GETTING AGG FOR %s at minute %s " % (state, minute))
+    # print("Is information in aggregate collection?")
     aggregate = mongo_query_aggregates_state(state)
     if aggregate:
-        print("Yes!")
+        # print("Yes!")
         return (state, aggregate)
-    print("No, so we'll compute it it: is data available?")
+    # print("No, so we'll compute it it: is data available?")
     aggregate = mongo_compute_state_count(state=state, minute=minute)
     if aggregate:
-        print("Yes! Let's save it in Mongo aggregate collection")
+        # print("Yes! Let's save it in Mongo aggregate collection")
         try:
             # save it in aggregate collection
             mongo_save_aggregates(aggregate)
         except:
-            print("Saving results didn't work")
+            #print("Saving results didn't work")
+            pass
         return (state, aggregate)
-    print("Information not available at this time")
+    # print("Information not available at this time")
     return (state, False)
 
 
