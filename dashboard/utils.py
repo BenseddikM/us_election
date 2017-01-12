@@ -149,13 +149,15 @@ def update_all_states_aggregates(minute):
     df = pd.read_csv(data_file_path, sep=";")
     states = df["State"].values
     results = {}
-
-    pool = Pool(processes=10)
-    n = len(states)
-    all_parameters = zip(states, [minute] * n)
-    list_tuples = pool.starmap(update_state_aggregates, all_parameters)
-    pool.close()
-    pool.join()
+    list_tuples = []
+    for state in states[:10]:
+        list_tuples.append(update_state_aggregates(state, minute))
+    #pool = Pool(processes=10)
+    #n = len(states)
+    #all_parameters = zip(states, [minute] * n)
+    #list_tuples = pool.starmap(update_state_aggregates, all_parameters)
+    # pool.close()
+    # pool.join()
 
     for item_tuple in list_tuples:
         if item_tuple[1]:

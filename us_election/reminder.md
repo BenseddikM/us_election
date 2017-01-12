@@ -60,7 +60,7 @@ server {
     location = /favicon.ico { access_log off; log_not_found off; }
 
     location /static/ {
-        root /home/ubuntu/us_election/us_election;
+        root /home/ubuntu/us_election;
     }
 
     location / {
@@ -107,3 +107,6 @@ mv secret.json sncf_web_project/sncfweb/settings/secret.json
 mv secret.json us_election/us_election/secret.json
 
 ```
+
+# Virtual env
+source us_election/us_election/bin/activate
