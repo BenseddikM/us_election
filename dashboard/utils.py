@@ -79,6 +79,15 @@ def get_map_with_results(aggregates):
     return map_records
 
 
+def mongo_query_states_with_info(update_time):
+    c = connect_mongoclient(host=MONGO_HOST, port=MONGO_PORT)
+    db = c["elections"]
+    collection = db["votes"]
+    query = {"vote_timestamp": {"$lt": update_time}}
+    states = list(collection.distinct("state", query))
+    return states
+
+
 def mongo_save_aggregates(agg_list):
     c = connect_mongoclient(host=MONGO_HOST, port=MONGO_PORT)
     db = c["elections"]
@@ -104,20 +113,12 @@ def mongo_query_aggregates_state(state):
         return False
 
 
-def mongo_compute_state_count(state="Minnesota", minute=None, limit=10000000):
+def mongo_compute_state_count(state, update_time):
     c = connect_mongoclient(host=MONGO_HOST, port=MONGO_PORT)
     db = c["elections"]
     collection = db["votes"]
-    if not minute:
-        update_time = datetime.now().strftime('2016-11-08T20:%M')
-    elif minute == "60":
-        update_time = '2016-11-08T21:00'
-    else:
-        update_time = '2016-11-08T20:%s' % minute
-    # timestamp: "2016-11-08T20:00"
     pipeline = [
         {"$match": {"state": state, "vote_timestamp": {"$lt": update_time}}},
-        {'$limit': 10000000},  # in case lots of voters
         {"$group": {"_id": {"state": '$state', "vote_timestamp": '$vote_timestamp', "vote_result": "$vote_result"},
                     "result": {"$sum": 1}}}
     ]
@@ -141,56 +142,46 @@ def mongo_compute_state_count(state="Minnesota", minute=None, limit=10000000):
         return answer
 
 
-def update_state_aggregates(state, minute):
+def update_state_aggregates(state, update_time):
     # Try to find in aggregate collection
-    print("GETTING AGG FOR %s at minute %s " % (state, minute))
-    # print("Is information in aggregate collection?")
+    print("GETTING AGG FOR %s at %s " % (state, update_time))
+    # We first check which states have information
     aggregate = mongo_query_aggregates_state(state)
     if aggregate:
         # print("Yes!")
         return (state, aggregate)
     # print("No, so we'll compute it it: is data available?")
-    aggregate = mongo_compute_state_count(state=state, minute=minute)
+    aggregate = mongo_compute_state_count(state=state, update_time=update_time)
     if aggregate:
         # print("Yes! Let's save it in Mongo aggregate collection")
         try:
             mongo_save_aggregates(aggregate)
         except:
-            #print("Saving results didn't work")
+            # print("Saving results didn't work")
             pass
         return (state, aggregate)
     # print("Information not available at this time")
     return (state, False)
 
 
-def update_all_states_aggregates(minute):
-    data_file_path = os.path.join(
-        project_path, "dashboard", "data", "state_info.csv")
-    df = pd.read_csv(data_file_path, sep=";")
-    states = df["State"].values
+def update_all_states_aggregates(update_time):
+
+    states = mongo_query_states_with_info(update_time)
     list_tuples = []
     for state in states:
-        list_tuples.append(update_state_aggregates(state, minute))
+        list_tuples.append(update_state_aggregates(state, update_time))
 
 
-def mongo_query_aggregates_all(minute):
-    if len(minute) == 1:
-        minute = "0" + minute
+def mongo_query_aggregates_all(update_time):
     c = connect_mongoclient(host=MONGO_HOST, port=MONGO_PORT)
     db = c["elections"]
     collection = db["aggregates"]
-    if not minute:
-        update_time = datetime.now().strftime('2016-11-08T20:%M')
-    elif minute == "60":
-        update_time = '2016-11-08T21:00'
-    else:
-        update_time = '2016-11-08T20:%s' % minute
     find_query = {"vote_timestamp": {"$lte": update_time}}
     aggregates = list(collection.find(find_query))
     # Handle BSON object
     string_json = json_util.dumps(aggregates)
     clean_aggregates = json.loads(string_json)
-    print(clean_aggregates)
+    # print(clean_aggregates)
     return clean_aggregates
 
 
@@ -206,12 +197,6 @@ def extract_main_electors_donut_data(all_aggregates_at_minute):
     final_result = winners.groupby("vote_result").sum()
     final_result_json = final_result.to_json()
     final_result_dict = json.loads(final_result_json)
-    # {
-    #    "Votes": {
-    #       "Clinton": "75",
-    #       "Trump": "142"
-    #   }
-    #}
     results = final_result_dict["Votes"]
     candidates = ["Clinton", "Trump", "Johnson", "Stein", "Autre"]
 
@@ -247,6 +232,8 @@ def extract_regular_electors_donut_data(all_aggregates_at_minute):
 
 Result array of:
 
-{ "_id" : { "state" : "Minnesota", "vote_timestamp" : "2016-11-08T20:00", "vote_result" : "Autre" }, "result" : 41657 }
-{ "_id" : { "state" : "Minnesota", "vote_timestamp" : "2016-11-08T20:00", "vote_result" : "McMullin" }, "result" : 53076 }
+{ "_id" : { "state" : "Minnesota", "vote_timestamp" : "2016-11-08T20:00",
+    "vote_result" : "Autre" }, "result" : 41657 }
+{ "_id" : { "state" : "Minnesota", "vote_timestamp" : "2016-11-08T20:00",
+    "vote_result" : "McMullin" }, "result" : 53076 }
 """

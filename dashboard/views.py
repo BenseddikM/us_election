@@ -1,10 +1,10 @@
 from django.shortcuts import render
 from django.http import JsonResponse
-import json
 from .utils import update_json_static_data, update_all_states_aggregates, get_geojson_data, mongo_query_aggregates_all, load_static_data, get_map_with_results, extract_main_electors_donut_data, extract_regular_electors_donut_data
-from django.conf import settings
 import os
-import pandas as pd
+
+
+DEFAULT_DB = os.environ["DEFAULT_DB"]
 
 
 def index(request):
@@ -24,13 +24,19 @@ def map_view(request):
 
 def map_data_ajax(request):
     minute_requested = request.GET.get('minute', '0')
+    if len(minute_requested) == 1:
+        minute_requested = "0" + minute_requested
+    if minute_requested == "60":
+        update_time = '2016-11-08T21:00'
+    else:
+        update_time = '2016-11-08T20:%s' % minute_requested
 
     # UPDATE AGGREGATES FOR GIVEN TIME
-    update_all_states_aggregates(minute=minute_requested)
+    update_all_states_aggregates(update_time=update_time)
 
     # QUERY AGGREGATES FOR GIVEN TIME
     all_aggregates_at_minute = mongo_query_aggregates_all(
-        minute=minute_requested)
+        update_time=update_time)
 
     # GET MAP (STATIC AND REALTIME)
     map_geojson = get_map_with_results(all_aggregates_at_minute)

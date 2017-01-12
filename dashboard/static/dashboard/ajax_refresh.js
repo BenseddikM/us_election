@@ -55,4 +55,11 @@ function onButtonClick() {
 
 // Activate button
 $('#slider-range-min').on('mouseup', onButtonClick);
-$('#button-refresh').on('click', onButtonClick);
+
+function addMinuteAndRefresh(){
+    addMinuteSlider();
+    onButtonClick();
+}
+$('#button-refresh').click(addMinuteAndRefresh);
+
+window.setInterval(addMinuteAndRefresh, 20000);

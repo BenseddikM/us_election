@@ -28,3 +28,10 @@ Dashboard
 Optionnal:
 - create models
 - create an update process to query database and save it in website database
+
+## MongoDB
+
+Create index on vote_result, state, and timestamp:
+```
+collection.create_index("vote_result")
+```

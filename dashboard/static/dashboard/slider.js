@@ -13,8 +13,6 @@ slide: function( event, ui ) {
 });
 $( "#amount" ).val( $( "#slider-range-min" ).slider( "value" )+" minutes after 8PM" );
 
-
-$('#button-refresh').click(function() {
+function addMinuteSlider() {
   s.slider('value', s.slider('value') + s.slider( "option", "step" ) );
-
-});
+}
