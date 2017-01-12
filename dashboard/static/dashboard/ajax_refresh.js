@@ -1,7 +1,7 @@
 // We get data from ajax view and add it to the map and others
 
 function initialAll(data) {
-    mapInitial(data["map"]);
+    mapInitialLayers(data["map"]);
 }
 // Launch at beginning
 $.getJSON(ajaxurl,
@@ -30,7 +30,7 @@ function refreshAll(data) {
 }
 
 function onButtonClick() {
-    $(this).button('loading');
+    $('#mongo-refresh').button('loading');
     // get value of slider
     var minute = $( "#slider-range-min" ).slider( "value" )
     $.getJSON(ajaxurl,
@@ -43,4 +43,7 @@ function onButtonClick() {
 
 
 // Activate button
-$('#mongo-refresh').on('click', onButtonClick);
+$('#slider-range-min').on('mouseup', onButtonClick);
+
+//#slider-range-min
+//$('#mongo-refresh').on('click', onButtonClick);

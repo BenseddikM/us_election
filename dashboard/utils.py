@@ -122,7 +122,7 @@ def mongo_compute_state_count(state="Minnesota", minute=None, limit=10000000):
 
 def update_state_aggregates(state, minute):
     # Try to find in aggregate collection
-    # print("GETTING AGG FOR %s at minute %s " % (state, minute))
+    print("GETTING AGG FOR %s at minute %s " % (state, minute))
     # print("Is information in aggregate collection?")
     aggregate = mongo_query_aggregates_state(state)
     if aggregate:
