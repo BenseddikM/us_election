@@ -9,8 +9,14 @@ info.onAdd = function (map) {
 
 // Method that we will use to update the control based on feature properties passed
 info.update = function (props) {
-    this._div.innerHTML = '<h4>US Election Results</h4>' +  (props ?
-        '<b>' + props.name + '</b><br />' + props.nb_votes + ' votes <br />'+ props.max_voters+' eligible voters.'
+    this._div.innerHTML = '<h4>US Election Results</h4>'
+    +  (props ?
+        '<b>' + props.name + '</b><br />'
+        + props.nb_votes + ' votes <br />'
+        + props.max_voters+' eligible voters. <br />'
+        + "Winner: "+props.vote_result +"<br />"
+        + "Result time: "+props.vote_timestamp +"<br />"
+
         : 'Hover over a state');
 };
 

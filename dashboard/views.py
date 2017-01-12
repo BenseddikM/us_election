@@ -1,7 +1,7 @@
 from django.shortcuts import render
 from django.http import JsonResponse
 import json
-from .utils import update_json_static_data, update_all_states_aggregates, get_geojson_data, mongo_query_aggregates_all, load_static_data, get_static_map, extract_main_electors_donut_data, extract_regular_electors_donut_data
+from .utils import update_json_static_data, update_all_states_aggregates, get_geojson_data, mongo_query_aggregates_all, load_static_data, get_map_with_results, extract_main_electors_donut_data, extract_regular_electors_donut_data
 from django.conf import settings
 import os
 import pandas as pd
@@ -25,15 +25,15 @@ def map_view(request):
 def map_data_ajax(request):
     minute_requested = request.GET.get('minute', '0')
 
-    # GET MAP STATIC DATA
-    updated_json = get_static_map()
+    # UPDATE AGGREGATES FOR GIVEN TIME
+    update_all_states_aggregates(minute=minute_requested)
 
-    # UPDATE REAL TIME INFORMATION
-    state_results = update_all_states_aggregates(minute=minute_requested)
-
-    # QUERY AGGREGATES FORMERLY CREATED
+    # QUERY AGGREGATES FOR GIVEN TIME
     all_aggregates_at_minute = mongo_query_aggregates_all(
         minute=minute_requested)
+
+    # GET MAP (STATIC AND REALTIME)
+    map_geojson = get_map_with_results(all_aggregates_at_minute)
 
     # EXTRACT MAIN VOTERS DONUT DATA
     main_electors_donut_data = extract_main_electors_donut_data(
@@ -45,11 +45,11 @@ def map_data_ajax(request):
 
     # SEND INFORMATION
     data = {
-        "map": {"type": "FeatureCollection", "features": updated_json},
-        "state_results": state_results,
+        "map": {"type": "FeatureCollection", "features": map_geojson},
         "main_electors_donut_data": main_electors_donut_data,
         "regular_electors_donut_data": regular_electors_donut_data,
-        "minute_requested": minute_requested
+        "minute_requested": minute_requested,
+        "all_aggregates_at_minute": all_aggregates_at_minute
     }
     # df = pd.read_json(flat_data)
 

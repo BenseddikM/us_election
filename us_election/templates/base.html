@@ -32,6 +32,11 @@
     <!-- Custom Fonts -->
     <link href="{% static 'vendor/font-awesome/css/font-awesome.min.css' %}" rel="stylesheet" type="text/css">
 
+    <!-- jQuery -->
+    <!-- <script src="{% static 'vendor/jquery/jquery.min.js' %}"></script> -->
+    <script src="https://code.jquery.com/jquery-1.12.4.js"></script>
+    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+
     <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
     <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
     <!--[if lt IE 9]>
@@ -64,23 +69,7 @@
             <div class="navbar-default sidebar" role="navigation">
                 <div class="sidebar-nav navbar-collapse">
                     <ul class="nav" id="side-menu">
-                        <li class="sidebar-search">
-                            <div class="input-group custom-search-form">
-                                <input type="text" class="form-control" placeholder="Search...">
-                                <span class="input-group-btn">
-                                <button class="btn btn-default" type="button">
-                                    <i class="fa fa-search"></i>
-                                </button>
-                            </span>
-                            </div>
-                            <!-- /input-group -->
-                        </li>
-                        <li>
-                            <a href="{% url 'dashboard' %}"><i class="fa fa-dashboard fa-fw"></i> General dashboard</a>
-                        </li>
-                        <li>
-                            <a href="{% url 'state' %}"><i class="fa fa-bar-chart-o fa-fw"></i> State level </a>
-                        </li>
+                        
                         <li>
                             <a href="{% url 'map' %}"><i class="fa fa-map fa-fw"></i> Map</a>
                         </li>
@@ -107,10 +96,7 @@
     </div>
     <!-- /#wrapper -->
 
-    <!-- jQuery -->
-    <!-- <script src="{% static 'vendor/jquery/jquery.min.js' %}"></script> -->
-    <script src="https://code.jquery.com/jquery-1.12.4.js"></script>
-    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+
     <!-- Bootstrap Core JavaScript -->
     <script src="{% static 'vendor/bootstrap/js/bootstrap.min.js' %}"></script>
 

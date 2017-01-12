@@ -5,15 +5,24 @@ function initialAll(data) {
 }
 // Launch at beginning
 $.getJSON(ajaxurl,
-    {minute :10},
+    {minute :0},
     initialAll);
 
-function updateButtonStatus(){
-    var buttonClass="btn btn-success btn-circle btn-lg";
-    var faviconClass="fa fa-check";
-    $("#mongo-status-circle").attr('class', buttonClass);
-    $("#mongo-status-fa").attr('class', faviconClass);
-    $('#mongo-refresh').button('reset');
+function updateButtonStatus(status){
+    if (status == "pending"){
+        var buttonClass="btn btn-warning btn-circle btn-lg";
+        var faviconClass="fa fa-question";
+        $('#button-refresh').button('loading');
+
+    }
+    else {
+        var buttonClass="btn btn-success btn-circle btn-lg";
+        var faviconClass="fa fa-check";
+        $('#button-refresh').button('reset');
+
+    }
+    $("#status-circle").attr('class', buttonClass);
+    $("#status-fa").attr('class', faviconClass);
 }
 
 function updateTimeUpdateMessage(minute){
@@ -25,12 +34,14 @@ function refreshAll(data) {
     mapRefresh(data["map"]);
     updateMainElectorDonut(data["main_electors_donut_data"]);
     updateRegularElectorDonut(data["regular_electors_donut_data"]);
-    updateButtonStatus();
+    updateButtonStatus("ok");
     updateTimeUpdateMessage(data["minute_requested"]);
 }
 
 function onButtonClick() {
-    $('#mongo-refresh').button('loading');
+    //$('#button-refresh').button('loading');
+    updateButtonStatus("pending");
+
     // get value of slider
     var minute = $( "#slider-range-min" ).slider( "value" )
     $.getJSON(ajaxurl,
@@ -44,6 +55,4 @@ function onButtonClick() {
 
 // Activate button
 $('#slider-range-min').on('mouseup', onButtonClick);
-
-//#slider-range-min
-//$('#mongo-refresh').on('click', onButtonClick);
+$('#button-refresh').on('click', onButtonClick);

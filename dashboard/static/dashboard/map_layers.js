@@ -14,7 +14,7 @@ function getColorResult(d) {
     return d == "Trump" ? '#800026' :
            d == "Clinton"  ? 'blue' :
            d == "Unknown"  ? 'grey' :
-                      'black';
+                      'grey';
 }
 
 function style(feature) {
@@ -31,7 +31,7 @@ function style(feature) {
 
 function styleResults(feature) {
     return {
-        fillColor: "grey",
+        fillColor:  getColorResult(feature.properties.vote_result),
         weight: 2,
         opacity: 1,
         color: 'white',
@@ -89,7 +89,7 @@ function mapInitialLayers(data) {
                 onEachFeature: onEachFeature
             }
         );
-        map.staticLayer.addTo(map);
+        //map.staticLayer.addTo(map);
 
         map.resultsLayer = L.geoJson(
             data,
@@ -98,7 +98,7 @@ function mapInitialLayers(data) {
                 onEachFeature: onEachFeature
             }
         );
-        //map.resultsLayer.addTo(map);
+        map.resultsLayer.addTo(map);
 
 
         // Add controls
@@ -107,10 +107,12 @@ function mapInitialLayers(data) {
             "State results": map.resultsLayer,
 
         };
-        L.control.layers(exclusiveLayers).addTo(map);
+        L.control.layers(exclusiveLayers, null,{collapsed:false}).addTo(map);
     }
 
 function mapRefresh(data) {
     map.staticLayer.clearLayers();
     map.staticLayer.addData(data);
+    map.resultsLayer.clearLayers();
+    map.resultsLayer.addData(data);
 }

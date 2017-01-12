@@ -14,13 +14,17 @@
 {% endblock %}
 
 {% block header_tail %}
+<!-- Time control https://jqueryui.com/slider/#rangemin -->
+<link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+
+<!-- Leaflet -->
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.0.2/dist/leaflet.css" />
 <link rel="stylesheet" href="{% static 'custom.css' %}" />
 <script src="https://unpkg.com/leaflet@1.0.2/dist/leaflet.js"></script>
 
-<!-- Time control https://jqueryui.com/slider/#rangemin -->
-<link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
-
+<!-- DataTables -->
+<link rel="stylesheet" href="https://cdn.datatables.net/1.10.13/css/jquery.dataTables.min.css" />
+<script src="https://cdn.datatables.net/1.10.13/js/jquery.dataTables.min.js"></script>
 
 {% endblock %}
 
@@ -33,9 +37,9 @@
             <p>
                 <label for="amount">Maximum Time:</label>
                 <input type="text" id="amount" readonly style="border:0; color:#f6931f; font-weight:bold;">
-                <button id="mongo-refresh" data-loading-text="Loading..." type="button" class="btn btn-primary" autocomplete="off" >Refesh data
+                <button id="button-refresh" data-loading-text="Loading..." type="button" class="btn btn-primary" autocomplete="off" >Refesh data (+ 1min)
                 </button>
-                <button id="mongo-status-circle" type="button" class="btn btn-warning btn-circle btn-lg"><i id="mongo-status-fa" class="fa fa-question"></i>
+                <button id="status-circle" type="button" class="btn btn-warning btn-circle btn-lg"><i id="status-fa" class="fa fa-question"></i>
                 </button>
                 <span id="minute_requested"></span>
             </p>
@@ -85,6 +89,39 @@
     </div>
 
     <!-- /.row -->
+    <!-- Not implemented yet
+
+    <div class="row">
+        <div class="col-lg-12">
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    Results
+                </div>
+                <div class="panel-body">
+                    <table id="datatable" class="display">
+                        <thead>
+                            <tr>
+                                <th>Column 1</th>
+                                <th>Column 2</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Row 1 Data 1</td>
+                                <td>Row 1 Data 2</td>
+                            </tr>
+                            <tr>
+                                <td>Row 2 Data 1</td>
+                                <td>Row 2 Data 2</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+-->
+    <!-- /.row -->
 </div>
 {% endblock %}
 
@@ -110,5 +147,8 @@
 <script src="{% static 'slider.js' %}"></script>
 <script src="{% static 'ajax_refresh.js' %}"></script>
 
+<!-- Not implemented yet
+<script src="{% static 'datatable.js' %}"></script>
+-->
 
 {% endblock %}

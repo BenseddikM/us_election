@@ -50,12 +50,33 @@ def update_json_static_data(records, info_df):
 
 def get_static_map():
     # GET BASIC GEOJSON DATA
-    flat_data = get_geojson_data()
+    geojson_data = get_geojson_data()
 
     # ADD NUMBER OF MAIN VOTERS AND NUMBER OF MAX VOTERS
-    info_df = load_static_data()
-    updated_json = update_json_static_data(flat_data, info_df)
-    return updated_json
+    df_voters = load_static_data()
+    updated_geojson_map = update_json_static_data(geojson_data, df_voters)
+    return updated_geojson_map
+
+
+def get_map_with_results(aggregates):
+    map_records = get_static_map()
+    aggregates = pd.DataFrame(aggregates)
+    idx = aggregates.groupby(['state'])['result'].transform(
+        max) == aggregates['result']
+    winners = aggregates[idx]
+    winners = winners[["state", "vote_result", "vote_timestamp"]]
+    winners = winners.set_index("state")
+    for record in map_records:
+        try:
+            state_name = record["properties"]["name"]
+            record["properties"]["vote_result"] = str(
+                winners["vote_result"][state_name])
+            record["properties"]["vote_timestamp"] = str(
+                winners["vote_timestamp"][state_name])
+        except KeyError:
+            record["properties"]["vote_result"] = "Unknown"
+            record["properties"]["vote_timestamp"] = "Not yet"
+    return map_records
 
 
 def mongo_save_aggregates(agg_list):
@@ -102,7 +123,7 @@ def mongo_compute_state_count(state="Minnesota", minute=None, limit=10000000):
     ]
 
     answer = list(collection.aggregate(pipeline, allowDiskUse=True))
-    # Handle BSON object?
+    # Handle BSON object
     string_json = json_util.dumps(answer)
     answer = json.loads(string_json)
 
@@ -133,7 +154,6 @@ def update_state_aggregates(state, minute):
     if aggregate:
         # print("Yes! Let's save it in Mongo aggregate collection")
         try:
-            # save it in aggregate collection
             mongo_save_aggregates(aggregate)
         except:
             #print("Saving results didn't work")
@@ -148,30 +168,14 @@ def update_all_states_aggregates(minute):
         project_path, "dashboard", "data", "state_info.csv")
     df = pd.read_csv(data_file_path, sep=";")
     states = df["State"].values
-    results = {}
     list_tuples = []
-    for state in states[:10]:
+    for state in states:
         list_tuples.append(update_state_aggregates(state, minute))
-    #pool = Pool(processes=10)
-    #n = len(states)
-    #all_parameters = zip(states, [minute] * n)
-    #list_tuples = pool.starmap(update_state_aggregates, all_parameters)
-    # pool.close()
-    # pool.join()
-
-    for item_tuple in list_tuples:
-        if item_tuple[1]:
-            results[item_tuple[0]] = item_tuple[1]
-        else:
-            results[item_tuple[0]] = "Not available"
-    return results
-
-
-def update_json_realtime_data():
-    pass
 
 
 def mongo_query_aggregates_all(minute):
+    if len(minute) == 1:
+        minute = "0" + minute
     c = connect_mongoclient(host=MONGO_HOST, port=MONGO_PORT)
     db = c["elections"]
     collection = db["aggregates"]
@@ -183,7 +187,11 @@ def mongo_query_aggregates_all(minute):
         update_time = '2016-11-08T20:%s' % minute
     find_query = {"vote_timestamp": {"$lte": update_time}}
     aggregates = list(collection.find(find_query))
-    return aggregates
+    # Handle BSON object
+    string_json = json_util.dumps(aggregates)
+    clean_aggregates = json.loads(string_json)
+    print(clean_aggregates)
+    return clean_aggregates
 
 
 def extract_main_electors_donut_data(all_aggregates_at_minute):
