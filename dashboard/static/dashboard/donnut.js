@@ -9,7 +9,7 @@ function setDonut(elementId) {
   ];
     var donut = Morris.Donut({
         element: elementId,
-        colors:["#DC241f","#00a4e4","#FED105","#17aa5c","purple", "grey"],
+        colors:["#DC241f","blue","#FED105","#17aa5c","#800026", "grey"],
         data: initialData,
         resize: true
     });
@@ -47,7 +47,7 @@ function updateMainElectorDonut(data){
 var regularElectorDonut = Morris.Donut({
     element: "donut-regular-electors",
     data: [{label: "Unknown", value: 100}],
-    colors:["grey","#DC241f","#00a4e4","#FED105","#17aa5c","purple"],
+    colors:["grey","blue","#FED105","#17aa5c","#800026","purple"],
     resize: true
 });
 
