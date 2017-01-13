@@ -8,10 +8,11 @@ from multiprocessing import Pool
 
 
 def get_collection(collection):
+    MONGO_DATABASE = os.environ["MONGO_DATABASE"]
     MONGO_PORT = os.environ["MONGO_PORT"]
     MONGO_HOST = os.environ["MONGO_HOST"]
     c = connect_mongoclient(host=MONGO_HOST, port=MONGO_PORT)
-    db = c["elections"]
+    db = c[MONGO_DATABASE]
     collection = db[collection]
     return collection
 
@@ -20,6 +21,26 @@ def clean_bson_to_json(bson):
     string_json = json_util.dumps(bson)
     dict_json = json.loads(string_json)
     return dict_json
+
+
+def create_index_votes(column):
+    collection = get_collection("votes")
+    collection.create_index(column)
+
+
+def does_index_exists_votes(column):
+    collection = get_collection("votes")
+    indexes = collection.index_information()
+    potential_index = column + "_1"
+    return potential_index in indexes
+
+
+def create_indexes_if_necessary(cols_list):
+    for column in cols_list:
+        if not does_index_exists_votes(column):
+            print("No index on %s, let's create one." % column)
+            create_index_votes(column)
+            print("Index created")
 
 
 def mongo_query_states_with_info(update_time):
@@ -73,12 +94,17 @@ def update_all_states_aggregates(update_time):
     """
     PROCESS:
     for a given update_time:
+    0: create indexes if necessary
     1: find states with results (distinct names in votes collection with timestamp lower than update_time)
     2: for each state with information:
         A: check if aggregate info is available in aggregates collection
         B: if not, compute counts from votes, and save it in aggregates
     """
+    print("Update aggregates for %s" % update_time)
+    indexes = ["vote_result", "state", "vote_timestamp"]
+    create_indexes_if_necessary(indexes)
     states = mongo_query_states_with_info(update_time)
+    # print("States with information are: %s" % states)
     for state in states:
         aggregate = mongo_query_aggregates_state(state)
         if aggregate:
