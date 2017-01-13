@@ -1,0 +1,83 @@
+{% extends 'base.html' %}
+{% load staticfiles %}
+
+<!-- Balise title <60 caractères -->
+{% block title %}
+<title>Documentation</title>
+{% endblock %}
+
+{% block header_up %}
+
+{% endblock %}
+
+{% block content %}
+<div id="page-wrapper">
+    <div class="row">
+        <div class="col-lg-12">
+            <h1 class="page-header">Documentation</h1>
+
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <h2>MongoDB</h2>
+                </div>
+                <!-- /.panel-heading -->
+                <div class="panel-body">
+                    <h3>MongoDB architecture</h3>
+                    <h3>MongoDB query workflow</h3>
+                    <h3>MongoDB encountered issues</h3>
+                </div>
+                <!-- /.panel-body -->
+            </div>
+            <!-- /.panel -->
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <h2>Cassandra</h2>
+                </div>
+                <!-- /.panel-heading -->
+                <div class="panel-body">
+                    <h3>Cassandra architecture</h3>
+                    <h3>Cassandra query workflow</h3>
+                    <h3>Cassandra encountered issues</h3>
+                </div>
+                <!-- /.panel-body -->
+            </div>
+        </div>
+        <!-- /.col-lg-12 -->
+    </div>
+
+    <!-- IMAGE MODAL -->
+    <div class="modal fade" id="imagemodal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg", style="width: 95%;
+  height: 95%;">
+            <div class="modal-content" style="height: auto;
+  min-height: 95%;">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+                    <h4 class="modal-title" id="myModalLabel">Image preview</h4>
+                </div>
+                <div class="modal-body">
+                    <img src="" id="imagepreview" style="width: 100%;" >
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- /.row -->
+
+</div>
+
+{% endblock %}
+
+{% block body_tail %}
+<script>
+// for responsive images
+$('img').on('click',function()
+            {
+                var sr=$(this).attr('src');
+                $('#imagepreview').attr('src',sr);
+                $('#imagemodal').modal('show');
+            });
+</script>
+{% endblock %}
