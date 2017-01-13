@@ -1,6 +1,7 @@
 from django.shortcuts import render
 from django.http import JsonResponse
-from .utils import update_json_static_data, update_all_states_aggregates, get_geojson_data, mongo_query_aggregates_all, load_static_data, get_map_with_results, extract_main_electors_donut_data, extract_regular_electors_donut_data
+from .utils_mongo import update_all_states_aggregates, mongo_query_aggregates_all
+from .utils_display import get_map_with_results, extract_main_electors_donut_data, extract_regular_electors_donut_data
 import os
 
 
@@ -60,13 +61,3 @@ def map_data_ajax(request):
     # df = pd.read_json(flat_data)
 
     return JsonResponse(data, safe=False)
-
-"""
-[
-  {label: "Donald Trump – Parti républicain", value: 150},
-  {label: "Hillary Clinton – Parti démocrate", value: 130},
-  {label: "Gary Johnson – Parti libertarien", value: 15},
-  {label: "Jill Stein – Parti vert", value: 10},
-  {label: "No known yet", value: 150}
-]
-"""

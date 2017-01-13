@@ -18,7 +18,9 @@ os.environ["DEFAULT_DB"] = "CASSANDRA"
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-# print("Base dir: ", BASE_DIR)
+os.environ["BASE_DIR"] = BASE_DIR
+
+
 # SECRETS NOT SAVED IN VCS
 try:
     with open(os.path.join(BASE_DIR, 'us_election/secret.json')) as secrets_file:
