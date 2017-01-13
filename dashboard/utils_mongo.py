@@ -83,8 +83,6 @@ def update_all_states_aggregates(update_time):
         aggregate = mongo_query_aggregates_state(state)
         if aggregate:
             return True
-        # If not available in aggregate collection, compute count from votes
-        # collection
         try:
             mongo_compute_state_count(
                 state=state, update_time=update_time)
@@ -98,15 +96,3 @@ def mongo_query_aggregates_all(update_time):
     aggregates = list(collection.find(find_query))
     clean_aggregates = clean_bson_to_json(aggregates)
     return clean_aggregates
-
-
-"""
-##########    AUTRE     ##################################################
-
-Result array of:
-
-{ "_id" : { "state" : "Minnesota", "vote_timestamp" : "2016-11-08T20:00",
-    "vote_result" : "Autre" }, "result" : 41657 }
-{ "_id" : { "state" : "Minnesota", "vote_timestamp" : "2016-11-08T20:00",
-    "vote_result" : "McMullin" }, "result" : 53076 }
-"""
