@@ -5,9 +5,6 @@ from .utils_display import get_map_with_results, extract_main_electors_donut_dat
 import os
 
 
-DEFAULT_DB = os.environ["DEFAULT_DB"]
-
-
 def index(request):
     context = {}
     return render(request, 'dashboard.html', context)
