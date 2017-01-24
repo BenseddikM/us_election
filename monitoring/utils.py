@@ -49,7 +49,7 @@ def check_mongo_connection(max_delay=15000):
         # print("MongoDB connection OK")
     except pymongo.errors.ServerSelectionTimeoutError as err:
         # Status stays False
-        add_info = None
+        add_info = err
         print(err)
     return status, add_info
 
