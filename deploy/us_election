@@ -1,6 +1,6 @@
 server {
     listen 80;
-    server_name 54.194.138.195;
+    server_name 54-171-253-25;
 
     access_log /home/ubuntu/access.log;
     error_log /home/ubuntu/error.log;

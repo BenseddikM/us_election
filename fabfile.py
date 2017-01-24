@@ -2,7 +2,7 @@ from fabric.contrib.files import append, exists, sed
 from fabric.api import env, local, run, put, sudo
 import random
 from os import path
-
+from fabric.api import settings
 
 # Conf: change what you need
 env.key_filename = "~/.ssh/aws-eb2"
@@ -102,8 +102,9 @@ def _set_nginx_service():
     # sudo('mkdir -p %s' % "/etc/nginx/sites-available")
     # create service
     sudo("cp %s %s" % (nginx_local_path, "/etc/nginx/sites-available"))
-    # activate it
-    sudo("ln -s /etc/nginx/sites-available/us_election /etc/nginx/sites-enabled")
+    # activate it with symbolic link
+    with settings(warn_only=True):
+        sudo("ln -s /etc/nginx/sites-available/us_election /etc/nginx/sites-enabled")
     # restart server:
     sudo("systemctl restart nginx")
 
