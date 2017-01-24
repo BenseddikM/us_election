@@ -1,6 +1,7 @@
 from datetime import datetime, timedelta
 from pymongo import MongoClient
 import pymongo
+import logging
 
 try:
     # Python 3.x
@@ -8,6 +9,8 @@ try:
 except ImportError:
     # Python 2.x
     from urllib import quote_plus
+
+logger = logging.getLogger(__name__)
 
 
 def connect_mongoclient(host, user=None, password=None, port=None, database=None, max_delay=15000):
@@ -20,6 +23,7 @@ def connect_mongoclient(host, user=None, password=None, port=None, database=None
         uri += ":" + str(port)
     if database:
         uri += "/%s" % quote_plus(database)
+    logger.info("uri is %s" % uri)
     client = MongoClient(uri, serverSelectionTimeoutMS=max_delay)
     return client
 

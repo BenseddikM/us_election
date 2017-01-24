@@ -102,9 +102,12 @@ def _set_nginx_service():
     # sudo('mkdir -p %s' % "/etc/nginx/sites-available")
     # create service
     sudo("cp %s %s" % (nginx_local_path, "/etc/nginx/sites-available"))
-    # activate it with symbolic link
+    # activate it with symbolic link (because it is present)
     with settings(warn_only=True):
         sudo("ln -s /etc/nginx/sites-available/us_election /etc/nginx/sites-enabled")
+    # remove default server nginx:
+    with settings(warn_only=True):
+        sudo("rm /etc/nginx/sites-enabled/default")
     # restart server:
     sudo("systemctl restart nginx")
 
