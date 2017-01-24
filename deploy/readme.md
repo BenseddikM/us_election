@@ -39,7 +39,7 @@ sudo ufw allow 8000
 source sncf_env/bin/activate
 source us_election/us_election/bin/activate
 
-./manage.py runserver 0.0.0.0:8000
+/home/ubuntu/sites/us_election/virtualenv/bin/python3 /home/ubuntu/sites/us_election/source/manage.py runserver 0.0.0.0:8000
 gunicorn --bind 0.0.0.0:8000 sncfweb.wsgi:application
 ```
 

@@ -4,7 +4,9 @@ from monitoring.utils import get_collection
 from datetime import datetime
 import json
 from bson import json_util
-from multiprocessing import Pool
+import logging
+
+logger = logging.getLogger(__name__)
 
 
 def clean_bson_to_json(bson):
@@ -28,9 +30,9 @@ def does_index_exists_votes(column):
 def create_indexes_if_necessary(cols_list):
     for column in cols_list:
         if not does_index_exists_votes(column):
-            print("No index on %s, let's create one." % column)
+            logger.info("No index on %s, let's create one." % column)
             create_index_votes(column)
-            print("Index created")
+            logger.info("Index created")
 
 
 def mongo_query_states_with_info(update_time):
@@ -90,11 +92,11 @@ def update_all_states_aggregates(update_time):
         A: check if aggregate info is available in aggregates collection
         B: if not, compute counts from votes, and save it in aggregates
     """
-    print("Update aggregates for %s" % update_time)
+    logger.info("Update aggregates for %s" % update_time)
     indexes = ["vote_result", "state", "vote_timestamp"]
     create_indexes_if_necessary(indexes)
     states = mongo_query_states_with_info(update_time)
-    # print("States with information are: %s" % states)
+    logger.info("States with information are: %s" % states)
     for state in states:
         aggregate = mongo_query_aggregates_state(state)
         if aggregate:
@@ -102,8 +104,8 @@ def update_all_states_aggregates(update_time):
         try:
             mongo_compute_state_count(
                 state=state, update_time=update_time)
-        except:
-            print("Update aggregates for state %s error" % state)
+        except Exception as e:
+            logger("Update aggregates for state %s error: %e" % (state, e))
 
 
 def mongo_query_aggregates_all(update_time):
