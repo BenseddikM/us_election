@@ -2,19 +2,17 @@ from datetime import datetime, timedelta
 from pymongo import MongoClient
 import pymongo
 import logging
+from django.conf import settings
+from urllib.parse import quote_plus
 
-try:
-    # Python 3.x
-    from urllib.parse import quote_plus
-except ImportError:
-    # Python 2.x
-    from urllib import quote_plus
+MONGO_PORT = settings.MONGO_PORT
+MONGO_HOST = settings.MONGO_HOST
+
 
 logger = logging.getLogger(__name__)
 
 
-def connect_mongoclient(host, user=None, password=None, port=None, database=None, max_delay=15000):
-    # Build URI
+def build_mongo_uri(host=MONGO_HOST, user=None, password=None, port=None, database=None):
     uri = "mongodb://"
     if user and password:
         uri += "%s:%s@" % (quote_plus(user), quote_plus(password))
@@ -23,16 +21,21 @@ def connect_mongoclient(host, user=None, password=None, port=None, database=None
         uri += ":" + str(port)
     if database:
         uri += "/%s" % quote_plus(database)
+    return uri
+
+
+def connect_mongoclient(max_delay=15000):
+    # Build URI
+    uri = build_mongo_uri()
     logger.info("uri is %s" % uri)
     client = MongoClient(uri, serverSelectionTimeoutMS=max_delay)
     return client
 
 
-def check_mongo_connection(host, user=None, password=None, port=None, database=None, max_delay=500):
+def check_mongo_connection(max_delay=15000):
 
     status = False
-    client = connect_mongoclient(host, user=user, password=password,
-                                 port=port, database=database, max_delay=max_delay)
+    client = connect_mongoclient(max_delay=max_delay)
     try:
         server_info = client.server_info()
         database_names = client.database_names()

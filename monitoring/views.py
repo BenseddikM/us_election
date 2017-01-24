@@ -3,10 +3,7 @@ from django.shortcuts import render
 from monitoring.utils import check_mongo_connection
 from django.http import JsonResponse
 import logging
-from django.conf import settings
 
-MONGO_PORT = settings.MONGO_PORT
-MONGO_HOST = settings.MONGO_HOST
 
 logger = logging.getLogger(__name__)
 
@@ -19,6 +16,6 @@ def index(request):
 def ajax_monitoring_mongo_db(request):
     # print(MONGO_HOST, MONGO_PORT)
     logger.info("Trying to get Mongo status")
-    status, add_info = check_mongo_connection(host=MONGO_HOST)
+    status, add_info = check_mongo_connection()
     response = {"status": status, "add_info": add_info or ""}
     return JsonResponse(response)
