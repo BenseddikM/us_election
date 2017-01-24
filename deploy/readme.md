@@ -80,14 +80,15 @@ sudo ufw allow 'Nginx Full'
 to see logs:
 ```
 sudo tail -f /var/log/nginx/error.log
+sudo systemctl status gunicorn_us_election.service
+less /var/log/syslog
+
 
 ```
 http://stackoverflow.com/questions/28689445/nginx-django-and-gunicorn-gunicorn-sock-file-is-missing
 ```
 ps auxf | grep gunicorn
 grep init: /var/log/syslog
-less /var/log/syslog
-sudo systemctl status gunicorn_us_election.service
 
 ```
 

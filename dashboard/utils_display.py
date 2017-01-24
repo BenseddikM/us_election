@@ -2,7 +2,9 @@ import os
 import pandas as pd
 import json
 
-BASE_DIR = os.environ["BASE_DIR"]
+from django.conf import settings
+
+BASE_DIR = settings.BASE_DIR
 
 # #### MAP ####
 
