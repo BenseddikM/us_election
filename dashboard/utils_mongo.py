@@ -1,20 +1,10 @@
 import os
 import pandas as pd
-from monitoring.utils import connect_mongoclient
+from monitoring.utils import get_collection
 from datetime import datetime
 import json
 from bson import json_util
 from multiprocessing import Pool
-
-
-def get_collection(collection):
-    MONGO_DATABASE = os.environ["MONGO_DATABASE"]
-    MONGO_PORT = os.environ["MONGO_PORT"]
-    MONGO_HOST = os.environ["MONGO_HOST"]
-    c = connect_mongoclient(host=MONGO_HOST, port=MONGO_PORT)
-    db = c[MONGO_DATABASE]
-    collection = db[collection]
-    return collection
 
 
 def clean_bson_to_json(bson):

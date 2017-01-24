@@ -7,9 +7,17 @@ from urllib.parse import quote_plus
 
 MONGO_PORT = settings.MONGO_PORT
 MONGO_HOST = settings.MONGO_HOST
+MONGO_DATABASE = settings.MONGO_DATABASE
 
 
 logger = logging.getLogger(__name__)
+
+
+def get_collection(collection):
+    c = connect_mongoclient()
+    db = c[MONGO_DATABASE]
+    collection = db[collection]
+    return collection
 
 
 def build_mongo_uri(host=MONGO_HOST, user=None, password=None, port=None, database=None):
@@ -36,21 +44,21 @@ def check_mongo_connection(max_delay=15000):
 
     status = False
     client = connect_mongoclient(max_delay=max_delay)
-    try:
-        server_info = client.server_info()
-        database_names = client.database_names()
-        # print(server_info)
-        status = True
-        add_info = {
-            "server_info": server_info,
-            "database_names": database_names,
-            "databases_stats": get_databases_stats(client)
-        }
-        # print("MongoDB connection OK")
-    except pymongo.errors.ServerSelectionTimeoutError as err:
-        # Status stays False
-        add_info = err
-        print(err)
+    # try:
+    server_info = client.server_info()
+    database_names = client.database_names()
+    # print(server_info)
+    status = True
+    add_info = {
+        "server_info": server_info,
+        "database_names": database_names,
+        "databases_stats": get_databases_stats(client)
+    }
+    # print("MongoDB connection OK")
+    # except pymongo.errors.ServerSelectionTimeoutError as err:
+    # Status stays False
+    #    add_info = err
+    #    print(err)
     return status, add_info
 
 
