@@ -28,22 +28,6 @@ fab deploy:host=ubuntu@ec2-54-171-253-25.eu-west-1.compute.amazonaws.com
 
 ```
 
-## Create the PostgreSQL Database and User
-
-```
-sudo -u postgres psql
-CREATE DATABASE sncf_db
-
-CREATE USER sncf_db_user WITH PASSWORD '4sefml!Fsef';
-
-ALTER ROLE sncf_db_user SET client_encoding TO 'utf8';
-ALTER ROLE sncf_db_user SET default_transaction_isolation TO 'read committed';
-ALTER ROLE sncf_db_user SET timezone TO 'UTC';
-
-GRANT ALL PRIVILEGES ON DATABASE sncf_db TO sncf_db_user;
-\q
-```
-
 ## Firewall
 ```
 sudo ufw allow 8000
@@ -103,7 +87,7 @@ http://stackoverflow.com/questions/28689445/nginx-django-and-gunicorn-gunicorn-s
 ps auxf | grep gunicorn
 grep init: /var/log/syslog
 less /var/log/syslog
-sudo systemctl status gunicorn_sncf.service
+sudo systemctl status gunicorn_us_election.service
 
 ```
 

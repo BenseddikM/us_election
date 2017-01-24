@@ -31,7 +31,7 @@ def initial_deploy():
 
 def _set_environment():
     sudo('apt-get update')
-    sudo('apt-get install python3-pip python3-dev libpq-dev')
+    sudo('apt-get install python3-pip python3-dev libpq-dev nginx')
     sudo('pip3 install virtualenv')
 
 
@@ -98,8 +98,10 @@ def _set_gunicorn_service():
 
 def _set_nginx_service():
     # install nginx: already done
+    # create path:
+    # sudo('mkdir -p %s' % "/etc/nginx/sites-available")
     # create service
-    sudo("cp %s %s" % (nginx_local_path, nginx_remote_path))
+    sudo("cp %s %s" % (nginx_local_path, "/etc/nginx/sites-available"))
     # activate it
     sudo("ln -s /etc/nginx/sites-available/us_election /etc/nginx/sites-enabled")
     # restart server:
