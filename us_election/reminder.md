@@ -3,6 +3,11 @@
 Do not forget to create index so that it is not to slow.
 ```
 collection.create_index("vote_result")
+
+collection.create_index({"vote_result":1, "vote_timestamp":1, "state":1})
+collection.create_index([("vote_result", pymongo.ASCENDING), ("vote_timestamp", pymongo.ASCENDING), ("state",pymongo.ASCENDING)])
+
+aggregates.create_index([("vote_result", pymongo.ASCENDING), ("state",pymongo.ASCENDING)], )
 ```
 
 # Cassandra:

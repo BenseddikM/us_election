@@ -5,6 +5,10 @@ from datetime import datetime
 import json
 from bson import json_util
 import logging
+from django.conf import settings
+from multiprocessing import Pool
+
+BASE_DIR = settings.BASE_DIR
 
 logger = logging.getLogger(__name__)
 
@@ -23,13 +27,16 @@ def create_index_votes(column):
 def does_index_exists_votes(column):
     collection = get_collection("votes")
     indexes = collection.index_information()
+    logger.debug("Indexes %s" % indexes)
     potential_index = column + "_1"
     return potential_index in indexes
 
 
 def create_indexes_if_necessary(cols_list):
     for column in cols_list:
-        if not does_index_exists_votes(column):
+        present = does_index_exists_votes(column)
+        logger.debug("Column %s is an index: %s" % (column, present))
+        if not present:
             logger.info("No index on %s, let's create one." % column)
             create_index_votes(column)
             logger.info("Index created")
@@ -56,7 +63,15 @@ def mongo_query_aggregates_state(state):
         return False
 
 
+def get_states_list():
+    data_path = os.path.join(BASE_DIR, "dashboard/data/state_info.csv")
+    df = pd.read_csv(data_path, sep=";")
+    states = list(df["State"].values)
+    return states
+
+
 def mongo_compute_state_count(state, update_time):
+    logger.info("Computing aggregates for state %s" % state)
     collection = get_collection("votes")
     pipeline = [
         {"$match": {"state": state, "vote_timestamp": {"$lt": update_time}}},
@@ -67,6 +82,7 @@ def mongo_compute_state_count(state, update_time):
     aggregates_list = list(collection.aggregate(pipeline, allowDiskUse=True))
     aggregates_list = clean_bson_to_json(aggregates_list)
     if len(aggregates_list) == 0:
+        logger.info("No aggregate for state %s" % state)
         return False
 
     # Unnest id properties
@@ -77,6 +93,7 @@ def mongo_compute_state_count(state, update_time):
         del item["_id"]
 
     # Save it in aggregates
+    logger.info("Saving aggregates")
     collection = get_collection("aggregates")
     collection.insert_many(aggregates_list)
     return aggregates_list
@@ -93,19 +110,30 @@ def update_all_states_aggregates(update_time):
         B: if not, compute counts from votes, and save it in aggregates
     """
     logger.info("Update aggregates for %s" % update_time)
-    indexes = ["vote_result", "state", "vote_timestamp"]
-    create_indexes_if_necessary(indexes)
-    states = mongo_query_states_with_info(update_time)
-    logger.info("States with information are: %s" % states)
-    for state in states:
-        aggregate = mongo_query_aggregates_state(state)
-        if aggregate:
-            return True
-        try:
-            mongo_compute_state_count(
-                state=state, update_time=update_time)
-        except Exception as e:
-            logger("Update aggregates for state %s error: %e" % (state, e))
+    # indexes = ["vote_result", "state", "vote_timestamp"]
+    # create_indexes_if_necessary(indexes)
+    # states = mongo_query_states_with_info(update_time)
+    # logger.info("States with information are: %s" % states)
+    states = get_states_list()
+    params = zip([update_time] * len(states), states)
+    pool = Pool(30)
+    pool.starmap(process_one_state, params)
+    pool.close()
+    pool.join()
+
+
+def process_one_state(update_time, state):
+    #logger.info("State %s" % state)
+    aggregate = mongo_query_aggregates_state(state)
+    if aggregate:
+        logger.info("Aggregate found in agg collection")
+        return True
+    try:
+        mongo_compute_state_count(
+            state=state, update_time=update_time)
+    except Exception as e:
+        #logger("Update aggregates for state %s error: %e" % (state, e))
+        pass
 
 
 def mongo_query_aggregates_all(update_time):

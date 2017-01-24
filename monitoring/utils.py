@@ -35,8 +35,10 @@ def build_mongo_uri(host=MONGO_HOST, user=None, password=None, port=None, databa
 def connect_mongoclient(max_delay=15000):
     # Build URI
     uri = build_mongo_uri()
-    logger.info("uri is %s" % uri)
-    client = MongoClient(uri, serverSelectionTimeoutMS=max_delay)
+    # logger.debug("uri is %s" % uri)
+    client = MongoClient(uri, serverSelectionTimeoutMS=max_delay, replicaset='rs0',
+                         readPreference='secondaryPreferred',
+                         localThresholdMS=35)
     return client
 
 

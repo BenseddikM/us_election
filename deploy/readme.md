@@ -108,3 +108,17 @@ sudo chown -R ubuntu:www-data /home/ubuntu/run/
 ```
     rewrite ^/api/(.*) /$1  break;
 ```
+
+## Postgres:
+```
+sudo -u postgres psql
+
+CREATE DATABASE api_transilien;
+CREATE USER api_transilien_user WITH PASSWORD 'password';
+
+ALTER ROLE api_transilien_user SET client_encoding TO 'utf8';
+ALTER ROLE api_transilien_user SET default_transaction_isolation TO 'read committed';
+ALTER ROLE api_transilien_user SET timezone TO 'UTC';
+
+GRANT ALL PRIVILEGES ON DATABASE api_transilien TO api_transilien_user;
+```

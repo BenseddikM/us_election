@@ -62,4 +62,4 @@ function addMinuteAndRefresh(){
 }
 $('#button-refresh').click(addMinuteAndRefresh);
 
-window.setInterval(addMinuteAndRefresh, 20000);
+//window.setInterval(addMinuteAndRefresh, 5000);
