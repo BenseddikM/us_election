@@ -62,3 +62,4 @@ Database monitoring
 
 # Todo
 - use asyncio with motor to query MongoDB
+- Add cassandra implementation to the django application
